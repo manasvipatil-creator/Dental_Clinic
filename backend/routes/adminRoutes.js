@@ -1,0 +1,134 @@
+const express = require('express');
+const router = express.Router();
+const { protect, requireAdmin } = require('../middleware/auth');
+const upload = require('../middleware/upload');
+
+const {
+  adminGetServices, adminGetService, adminCreateService, adminUpdateService, adminDeleteService,
+} = require('../controllers/serviceController');
+
+const {
+  adminGetDoctors, adminGetDoctor, adminCreateDoctor, adminUpdateDoctor, adminDeleteDoctor,
+} = require('../controllers/doctorController');
+
+const {
+  adminGetAppointments, adminGetAppointment, adminUpdateAppointmentStatus, adminGetStats,
+} = require('../controllers/appointmentController');
+
+const {
+  adminGetGallery, adminUploadGallery, adminUpdateGallery, adminDeleteGallery,
+} = require('../controllers/galleryController');
+
+const {
+  adminGetTestimonials, adminCreateTestimonial, adminUpdateTestimonial, adminDeleteTestimonial,
+} = require('../controllers/testimonialController');
+
+const {
+  adminGetInquiries, adminGetInquiry, adminUpdateInquiry, adminDeleteInquiry,
+} = require('../controllers/contactController');
+
+const {
+  adminUpdateSettings, adminGetAllContent, adminUpsertContent, adminDeleteContent,
+} = require('../controllers/settingsController');
+
+// All admin routes require authentication
+router.use(protect, requireAdmin);
+
+// Dashboard metrics (aliased to prevent adblockers from blocking /stats)
+router.get('/stats', adminGetStats);
+router.get('/overview', adminGetStats);
+router.get('/dashboard-metrics', adminGetStats);
+
+// Services
+router.get('/services', adminGetServices);
+router.get('/services/:id', adminGetService);
+router.post('/services', upload.single('image'), (req, res, next) => {
+  if (req.file) {
+    req.body.image = `/uploads/${req.file.filename}`;
+  }
+  adminCreateService(req, res, next);
+});
+router.put('/services/:id', upload.single('image'), (req, res, next) => {
+  if (req.file) {
+    req.body.image = `/uploads/${req.file.filename}`;
+  }
+  adminUpdateService(req, res, next);
+});
+router.delete('/services/:id', adminDeleteService);
+
+// Service image upload (dedicated endpoint)
+router.post('/services/:id/image', upload.single('image'), async (req, res, next) => {
+  try {
+    const Service = require('../models/Service');
+    if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
+    const imageUrl = `/uploads/${req.file.filename}`;
+    const service = await Service.findByIdAndUpdate(req.params.id, { image: imageUrl }, { new: true });
+    if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
+    res.json({ success: true, data: { image: imageUrl }, message: 'Image uploaded' });
+  } catch (err) { next(err); }
+});
+
+// Doctors
+router.get('/doctors', adminGetDoctors);
+router.get('/doctors/:id', adminGetDoctor);
+router.post('/doctors', adminCreateDoctor);
+router.put('/doctors/:id', adminUpdateDoctor);
+router.delete('/doctors/:id', adminDeleteDoctor);
+
+// Doctor image upload
+router.post('/doctors/:id/image', upload.single('image'), async (req, res, next) => {
+  try {
+    const Doctor = require('../models/Doctor');
+    if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
+    const imageUrl = `/uploads/${req.file.filename}`;
+    const doctor = await Doctor.findByIdAndUpdate(req.params.id, { image: imageUrl }, { new: true });
+    if (!doctor) return res.status(404).json({ success: false, message: 'Doctor not found' });
+    res.json({ success: true, data: { image: imageUrl }, message: 'Image uploaded' });
+  } catch (err) { next(err); }
+});
+
+// Appointments
+router.get('/appointments', adminGetAppointments);
+router.get('/appointments/:id', adminGetAppointment);
+router.put('/appointments/:id/status', adminUpdateAppointmentStatus);
+
+// Gallery
+router.get('/gallery', adminGetGallery);
+router.post('/gallery', upload.single('image'), adminUploadGallery);
+router.put('/gallery/:id', adminUpdateGallery);
+router.delete('/gallery/:id', adminDeleteGallery);
+
+// Testimonials
+router.get('/testimonials', adminGetTestimonials);
+router.post('/testimonials', adminCreateTestimonial);
+router.put('/testimonials/:id', adminUpdateTestimonial);
+router.delete('/testimonials/:id', adminDeleteTestimonial);
+
+// Contact inquiries
+router.get('/inquiries', adminGetInquiries);
+router.get('/inquiries/:id', adminGetInquiry);
+router.put('/inquiries/:id', adminUpdateInquiry);
+router.delete('/inquiries/:id', adminDeleteInquiry);
+
+// Settings
+router.put('/settings', adminUpdateSettings);
+
+// Website content
+router.get('/content', adminGetAllContent);
+router.put('/content/:key', adminUpsertContent);
+router.delete('/content/:id', adminDeleteContent);
+
+// Logo upload
+router.post('/settings/logo', upload.single('logo'), async (req, res, next) => {
+  try {
+    const ClinicSettings = require('../models/ClinicSettings');
+    if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
+    const logoUrl = `/uploads/${req.file.filename}`;
+    let settings = await ClinicSettings.findOne();
+    if (!settings) settings = await ClinicSettings.create({ logoUrl });
+    else { settings.logoUrl = logoUrl; await settings.save(); }
+    res.json({ success: true, data: { logoUrl }, message: 'Logo uploaded' });
+  } catch (err) { next(err); }
+});
+
+module.exports = router;

@@ -1,0 +1,1326 @@
+/* ==========================================================================
+   SmileCraft Dental Clinic — Modern Homepage Stylesheet
+   Strictly following the SmileCraft Brand Identity Concept Board:
+   Primary Teal: #0EA5A0 | Deep Slate: #1E293B | Accent Mint: #7DD3C7
+   Background: #F8FAFC | Text: #0F172A | Font: Poppins
+   ========================================================================== */
+
+.home-page-container {
+  overflow-x: hidden;
+  background-color: var(--bg);
+}
+
+/* Common Section Headers */
+.section-header-centered {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto var(--space-12);
+}
+
+.section-overhead-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-3);
+}
+
+.section-main-heading {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  color: var(--secondary);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-3);
+}
+
+.section-header-description {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ==========================================================================
+   B. HERO SECTION
+   ========================================================================== */
+.hero-modern-section {
+  position: relative;
+  background: linear-gradient(135deg, #F0FDF4 0%, #F8FAFC 50%, #E6FAF8 100%);
+  padding: calc(var(--space-12) + 1rem) 0 var(--space-16);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.hero-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 12% 25%, rgba(14, 165, 160, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(125, 211, 199, 0.14) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-grid-wrapper {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: var(--space-12);
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(14, 165, 160, 0.1);
+  color: var(--primary-dark);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(14, 165, 160, 0.2);
+  margin-bottom: var(--space-4);
+}
+
+.hero-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 160, 0.25);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.7; }
+}
+
+.hero-main-heading {
+  font-size: clamp(2.5rem, 4.5vw, 3.8rem);
+  font-weight: 800;
+  color: var(--secondary);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-5);
+}
+
+.hero-accent-text {
+  color: var(--primary);
+  position: relative;
+  display: inline-block;
+}
+
+.hero-subtext {
+  font-size: var(--font-size-lg);
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: var(--space-8);
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+
+.hero-cta-btn {
+  background-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(14, 165, 160, 0.25);
+  transition: all var(--transition);
+}
+
+.hero-cta-btn:hover {
+  background-color: var(--primary-dark);
+  box-shadow: 0 12px 30px rgba(14, 165, 160, 0.35);
+  transform: translateY(-2px);
+}
+
+.hero-cta-outline {
+  background-color: #ffffff;
+  border: 2px solid var(--border);
+  color: var(--secondary);
+}
+
+.hero-cta-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.hero-trust-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.trust-indicator-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--font-size-sm);
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.trust-icon-wrap {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Hero Visual Column */
+.hero-visual-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-photo-frame {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 28px;
+  box-shadow: var(--shadow-xl);
+  z-index: 1;
+}
+
+.hero-main-photo {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  border-radius: 28px;
+  display: block;
+  border: 4px solid #ffffff;
+}
+
+.hero-photo-soft-mint-decor {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(125, 211, 199, 0.35) 0%, rgba(14, 165, 160, 0.2) 100%);
+  border-radius: 32px;
+  z-index: -1;
+}
+
+.hero-floating-badge {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  animation: badgeFloat 5s ease-in-out infinite;
+}
+
+.badge-top-right {
+  top: 8%;
+  right: -12%;
+  animation-delay: -1.2s;
+}
+
+.badge-bottom-left {
+  bottom: 8%;
+  left: -10%;
+  animation-delay: -3s;
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.floating-badge-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badge-icon-shield {
+  background: #E6FAF8;
+}
+
+.floating-badge-text strong {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--secondary);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.floating-badge-text span {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   C. TRUST / BENEFITS STRIP (Matches the 4 Icons from Brand Board)
+   ========================================================================== */
+.brand-benefits-strip {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-8) 0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+}
+
+.brand-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.benefit-strip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
+}
+
+.benefit-strip-item:hover {
+  background: var(--bg);
+  transform: translateY(-2px);
+}
+
+.benefit-strip-icon-box {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform var(--transition);
+}
+
+.benefit-strip-item:hover .benefit-strip-icon-box {
+  transform: scale(1.08);
+  background: #D5F4F0;
+}
+
+.benefit-strip-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 2px;
+}
+
+.benefit-strip-desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   D. ABOUT SECTION ("More Than Just a Smile")
+   ========================================================================== */
+.about-preview-section {
+  background: var(--bg);
+}
+
+.about-preview-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.about-visual-column {
+  position: relative;
+}
+
+.about-image-wrapper {
+  position: relative;
+  border-radius: 24px;
+}
+
+.about-preview-img {
+  width: 100%;
+  height: 460px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  border: 4px solid #ffffff;
+  position: relative;
+  z-index: 2;
+}
+
+.about-mint-accent-box {
+  position: absolute;
+  bottom: -16px;
+  left: -16px;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(14, 165, 160, 0.15) 0%, rgba(125, 211, 199, 0.4) 100%);
+  z-index: 1;
+}
+
+.about-floating-experience-tag {
+  position: absolute;
+  bottom: 24px;
+  right: -14px;
+  background: var(--secondary);
+  color: #ffffff;
+  padding: 14px 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 3;
+}
+
+.about-tag-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-text-column {
+  padding-left: var(--space-4);
+}
+
+.section-lead-paragraph {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: var(--space-4);
+}
+
+.about-body-text {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-6);
+}
+
+.about-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.about-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.check-bullet {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.about-check-item strong {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--secondary);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.about-check-item p {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ==========================================================================
+   E. FEATURED DENTAL SERVICES
+   ========================================================================== */
+.services-modern-section {
+  background: #ffffff;
+}
+
+.services-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.modern-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  transition: all var(--transition);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modern-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(14, 165, 160, 0.12);
+  border-color: rgba(14, 165, 160, 0.3);
+}
+
+.service-card-img-wrapper {
+  position: relative;
+  height: 200px;
+  background: linear-gradient(135deg, #F0FDF4 0%, #E6FAF8 100%);
+  overflow: hidden;
+}
+
+.service-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.service-card:hover .service-card-img {
+  transform: scale(1.06);
+}
+
+.service-card-placeholder-graphic {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.service-badge-icon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-card-category-tag {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+.service-card-content {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.service-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: var(--space-2);
+  transition: color var(--transition);
+}
+
+.service-card:hover .service-card-title {
+  color: var(--primary);
+}
+
+.service-card-desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--space-5);
+  flex: 1;
+}
+
+.service-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.service-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary);
+  transition: gap var(--transition);
+}
+
+.service-card:hover .service-card-action {
+  gap: 8px;
+}
+
+.service-card-price {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.services-cta-bottom {
+  text-align: center;
+  margin-top: var(--space-12);
+}
+
+.services-empty-state {
+  text-align: center;
+  padding: var(--space-12);
+  background: var(--bg);
+  border-radius: 20px;
+  border: 1px dashed var(--border);
+}
+
+/* ==========================================================================
+   F. OUR DENTAL TEAM
+   ========================================================================== */
+.doctors-modern-section {
+  background: var(--bg);
+}
+
+.doctors-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.doctor-card {
+  text-align: center;
+}
+
+.doctor-card-photo-wrap {
+  position: relative;
+  height: 240px;
+  background: linear-gradient(135deg, #e0f7f6 0%, #f1f5f9 100%);
+  overflow: hidden;
+}
+
+.doctor-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.doctor-card:hover .doctor-photo {
+  transform: scale(1.05);
+}
+
+.doctor-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doctor-avatar-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+}
+
+.doctor-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(16, 185, 129, 0.95);
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.doctor-card-details {
+  padding: var(--space-5);
+}
+
+.doctor-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 4px;
+}
+
+.doctor-specialization {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.doctor-qualifications {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.doctor-exp-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--secondary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-top: 4px;
+}
+
+.doctors-cta-bottom {
+  text-align: center;
+  margin-top: var(--space-10);
+}
+
+/* ==========================================================================
+   G. WHY CHOOSE US (4 Feature Cards)
+   ========================================================================== */
+.why-choose-modern-section {
+  background: #ffffff;
+}
+
+.why-choose-four-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.why-feature-card {
+  padding: var(--space-8) var(--space-6);
+  border-radius: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+  text-align: left;
+}
+
+.why-feature-card:hover {
+  background: #ffffff;
+  border-color: rgba(14, 165, 160, 0.4);
+  box-shadow: 0 16px 36px rgba(14, 165, 160, 0.1);
+  transform: translateY(-4px);
+}
+
+.why-feature-icon-wrapper {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-5);
+  transition: transform var(--transition);
+}
+
+.why-feature-card:hover .why-feature-icon-wrapper {
+  transform: scale(1.1);
+  background: #D5F4F0;
+}
+
+.why-feature-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: var(--space-3);
+}
+
+.why-feature-desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ==========================================================================
+   H. GALLERY PREVIEW ("Inside SmileCraft")
+   ========================================================================== */
+.gallery-preview-section {
+  background: var(--bg);
+}
+
+.gallery-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.gallery-preview-item {
+  position: relative;
+  height: 250px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.gallery-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.gallery-preview-item:hover .gallery-preview-img {
+  transform: scale(1.08);
+}
+
+.gallery-preview-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-4);
+  background: linear-gradient(transparent, rgba(15, 23, 42, 0.85));
+  color: #ffffff;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.gallery-preview-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.gallery-preview-cat {
+  font-size: 0.72rem;
+  background: rgba(14, 165, 160, 0.8);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ==========================================================================
+   I. APPOINTMENT CTA (Deep Slate #1E293B with Teal Accents)
+   ========================================================================== */
+.appointment-cta-slate-section {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+  color: #ffffff;
+  padding: var(--space-16) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.appointment-cta-slate-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(14, 165, 160, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.appointment-cta-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  position: relative;
+  z-index: 2;
+}
+
+.cta-left-content {
+  max-width: 620px;
+}
+
+.cta-overhead-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7DD3C7;
+  background: rgba(125, 211, 199, 0.15);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-3);
+}
+
+.cta-headline {
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: var(--space-3);
+}
+
+.cta-submessage {
+  font-size: var(--font-size-base);
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
+}
+
+.cta-actions-group {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.cta-booking-btn {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 10px 25px rgba(14, 165, 160, 0.4);
+}
+
+.cta-booking-btn:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.cta-call-btn {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.cta-call-btn:hover {
+  background-color: #ffffff;
+  color: var(--secondary);
+}
+
+/* ==========================================================================
+   J. TESTIMONIALS SECTION
+   ========================================================================== */
+.testimonials-modern-section {
+  background: #ffffff;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.testimonial-modern-card {
+  padding: var(--space-8) var(--space-6);
+  border-radius: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition);
+}
+
+.testimonial-modern-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(14, 165, 160, 0.3);
+  transform: translateY(-3px);
+}
+
+.testimonial-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: var(--space-4);
+}
+
+.verified-patient-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.testimonial-quote {
+  font-size: var(--font-size-base);
+  color: var(--text-main);
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: var(--space-6);
+  flex: 1;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.testimonial-author-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+}
+
+.testimonial-author-name {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.testimonial-author-sub {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   K. CONTACT SECTION
+   ========================================================================== */
+.contact-home-section {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.contact-home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: flex-start;
+}
+
+.contact-home-desc {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-8);
+}
+
+.contact-info-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.contact-info-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition);
+}
+
+.contact-info-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+}
+
+.contact-info-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-card-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.contact-card-val {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.contact-form-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+}
+
+.contact-form-heading {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 4px;
+}
+
+.contact-form-sub {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-6);
+}
+
+.form-group-custom {
+  margin-bottom: var(--space-4);
+}
+
+.custom-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.custom-input,
+.custom-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-main);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.custom-input:focus,
+.custom-textarea:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 160, 0.15);
+}
+
+.form-row-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.contact-submit-btn {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.contact-success-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.contact-success-state h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.contact-success-state p {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.contact-error-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-4);
+}
+
+/* ==========================================================================
+   RESPONSIVENESS (Desktop, Tablet, Mobile)
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .hero-grid-wrapper {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-subtext {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-cta-group {
+    justify-content: center;
+  }
+
+  .hero-trust-indicators {
+    align-items: center;
+  }
+
+  .badge-top-right {
+    right: 2%;
+  }
+
+  .badge-bottom-left {
+    left: 2%;
+  }
+
+  .brand-benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-text-column {
+    padding-left: 0;
+  }
+
+  .services-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .doctors-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .why-choose-four-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-modern-section {
+    padding: var(--space-8) 0 var(--space-12);
+  }
+
+  .hero-main-photo {
+    height: 360px;
+  }
+
+  .hero-floating-badge {
+    position: static;
+    margin: var(--space-3) auto;
+    max-width: 320px;
+  }
+
+  .brand-benefits-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .services-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doctors-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .why-choose-four-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .appointment-cta-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cta-actions-group {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .cta-booking-btn,
+  .cta-call-btn {
+    width: 100%;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row-two-col {
+    grid-template-columns: 1fr;
+  }
+}
