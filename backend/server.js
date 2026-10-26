@@ -26,23 +26,39 @@ app.use(helmet({
 }));
 
 // CORS
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:5174')
+const defaultOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'https://dentalclinic-plum.vercel.app',
+];
+
+const configuredOrigins = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
-  .map((origin) => origin.trim());
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...configuredOrigins]));
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, or Postman)
     if (!origin) return callback(null, true);
 
+    const normalizedOrigin = origin.replace(/\/+$/, '');
+
     // In development mode, dynamically permit any localhost or 127.0.0.1 port (e.g., 5173, 5174, etc.)
     if (process.env.NODE_ENV !== 'production') {
-      if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(normalizedOrigin)) {
         return callback(null, true);
       }
     }
 
-    if (allowedOrigins.includes(origin)) {
+    if (
+      allowedOrigins.includes(normalizedOrigin) ||
+      /^https:\/\/dentalclinic(-[a-z0-9-]+)?\.vercel\.app$/.test(normalizedOrigin)
+    ) {
       return callback(null, true);
     }
 

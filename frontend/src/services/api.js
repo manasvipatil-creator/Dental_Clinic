@@ -1,7 +1,18 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-export const UPLOADS_URL = import.meta.env.VITE_UPLOADS_URL || 'http://localhost:5000';
+// Centralized API base URL configuration
+// Accepts "https://dental-clinic-vb9y.onrender.com" or "http://localhost:5000" (with or without /api or trailing slash)
+const rawBaseUrl = (
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:5000'
+).trim().replace(/\/+$/, '');
+
+const API_URL = rawBaseUrl.endsWith('/api') ? rawBaseUrl : `${rawBaseUrl}/api`;
+
+export const UPLOADS_URL = import.meta.env.VITE_UPLOADS_URL
+  ? import.meta.env.VITE_UPLOADS_URL.trim().replace(/\/+$/, '')
+  : (rawBaseUrl.endsWith('/api') ? rawBaseUrl.slice(0, -4) : rawBaseUrl);
 
 const api = axios.create({
   baseURL: API_URL,
