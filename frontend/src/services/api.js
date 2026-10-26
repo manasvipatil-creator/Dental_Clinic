@@ -1,18 +1,35 @@
 import axios from 'axios';
 
 // Centralized API base URL configuration
-// Accepts "https://dental-clinic-vb9y.onrender.com" or "http://localhost:5000" (with or without /api or trailing slash)
-const rawBaseUrl = (
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_URL ||
-  'http://localhost:5000'
-).trim().replace(/\/+$/, '');
+// In production: uses VITE_API_BASE_URL or falls back to deployed Render backend
+// In local development: uses VITE_API_BASE_URL or falls back to http://localhost:5000
+const PRODUCTION_API_URL = 'https://dental-clinic-vb9y.onrender.com';
+const DEVELOPMENT_API_URL = 'http://localhost:5000';
 
-const API_URL = rawBaseUrl.endsWith('/api') ? rawBaseUrl : `${rawBaseUrl}/api`;
+const isProduction = import.meta.env.PROD || import.meta.env.MODE === 'production';
 
-export const UPLOADS_URL = import.meta.env.VITE_UPLOADS_URL
+// Get base URL from environment variable, if set
+const envBaseUrl = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+
+// If in production mode, never allow localhost fallback
+let resolvedBaseUrl;
+if (isProduction) {
+  // If an environment variable is provided and is NOT localhost, use it; otherwise use the deployed Render URL
+  if (envBaseUrl && !envBaseUrl.includes('localhost') && !envBaseUrl.includes('127.0.0.1')) {
+    resolvedBaseUrl = envBaseUrl;
+  } else {
+    resolvedBaseUrl = PRODUCTION_API_URL;
+  }
+} else {
+  // In local development, use envBaseUrl if provided, else default to localhost:5000
+  resolvedBaseUrl = envBaseUrl || DEVELOPMENT_API_URL;
+}
+
+const API_URL = resolvedBaseUrl.endsWith('/api') ? resolvedBaseUrl : `${resolvedBaseUrl}/api`;
+
+export const UPLOADS_URL = import.meta.env.VITE_UPLOADS_URL && !isProduction
   ? import.meta.env.VITE_UPLOADS_URL.trim().replace(/\/+$/, '')
-  : (rawBaseUrl.endsWith('/api') ? rawBaseUrl.slice(0, -4) : rawBaseUrl);
+  : (resolvedBaseUrl.endsWith('/api') ? resolvedBaseUrl.slice(0, -4) : resolvedBaseUrl);
 
 const api = axios.create({
   baseURL: API_URL,
@@ -20,8 +37,19 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach JWT token to every request
+// Attach JWT token to every request and safeguard against localhost calls on live websites
 api.interceptors.request.use((config) => {
+  // Runtime domain guard: If running in a browser on a live non-localhost domain,
+  // enforce that requests never go to localhost
+  if (typeof window !== 'undefined' && window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    if (config.baseURL && (config.baseURL.includes('localhost') || config.baseURL.includes('127.0.0.1'))) {
+      config.baseURL = `${PRODUCTION_API_URL}/api`;
+    }
+    if (config.url && (config.url.startsWith('http://localhost') || config.url.startsWith('http://127.0.0.1'))) {
+      config.url = config.url.replace(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, PRODUCTION_API_URL);
+    }
+  }
+
   const token = localStorage.getItem('sc_admin_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
