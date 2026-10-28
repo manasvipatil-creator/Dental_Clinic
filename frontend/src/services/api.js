@@ -39,6 +39,11 @@ const api = axios.create({
 
 // Attach JWT token to every request and safeguard against localhost calls on live websites
 api.interceptors.request.use((config) => {
+  // If sending FormData, delete Content-Type so browser/axios sets multipart boundary properly
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
   // Runtime domain guard: If running in a browser on a live non-localhost domain,
   // enforce that requests never go to localhost
   if (typeof window !== 'undefined' && window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
@@ -103,27 +108,28 @@ export const adminApi = {
   // Services
   getServices: (params) => api.get('/admin/services', { params }),
   getService: (id) => api.get(`/admin/services/${id}`),
-  createService: (data) => api.post('/admin/services', data, data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {}),
-  updateService: (id, data) => api.put(`/admin/services/${id}`, data, data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {}),
+  createService: (data) => api.post('/admin/services', data),
+  updateService: (id, data) => api.put(`/admin/services/${id}`, data),
   deleteService: (id) => api.delete(`/admin/services/${id}`),
-  uploadServiceImage: (id, formData) => api.post(`/admin/services/${id}/image`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadServiceImage: (id, formData) => api.post(`/admin/services/${id}/image`, formData),
 
   // Doctors
   getDoctors: (params) => api.get('/admin/doctors', { params }),
   getDoctor: (id) => api.get(`/admin/doctors/${id}`),
-  createDoctor: (data) => api.post('/admin/doctors', data, data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {}),
-  updateDoctor: (id, data) => api.put(`/admin/doctors/${id}`, data, data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {}),
+  createDoctor: (data) => api.post('/admin/doctors', data),
+  updateDoctor: (id, data) => api.put(`/admin/doctors/${id}`, data),
   deleteDoctor: (id) => api.delete(`/admin/doctors/${id}`),
-  uploadDoctorImage: (id, formData) => api.post(`/admin/doctors/${id}/image`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadDoctorImage: (id, formData) => api.post(`/admin/doctors/${id}/image`, formData),
 
   // Appointments
   getAppointments: (params) => api.get('/admin/appointments', { params }),
   getAppointment: (id) => api.get(`/admin/appointments/${id}`),
   updateAppointmentStatus: (id, data) => api.put(`/admin/appointments/${id}/status`, data),
+  deleteAppointment: (id) => api.delete(`/admin/appointments/${id}`),
 
   // Gallery
   getGallery: (params) => api.get('/admin/gallery', { params }),
-  uploadGallery: (formData) => api.post('/admin/gallery', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadGallery: (formData) => api.post('/admin/gallery', formData),
   updateGallery: (id, data) => api.put(`/admin/gallery/${id}`, data),
   deleteGallery: (id) => api.delete(`/admin/gallery/${id}`),
 

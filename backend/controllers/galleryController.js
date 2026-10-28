@@ -38,9 +38,21 @@ const adminUploadGallery = asyncHandler(async (req, res) => {
 
 // Admin: PUT /api/admin/gallery/:id
 const adminUpdateGallery = asyncHandler(async (req, res) => {
-  const item = await Gallery.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  const item = await Gallery.findById(req.params.id);
   if (!item) return res.status(404).json({ success: false, message: 'Gallery item not found' });
-  return successResponse(res, item, 'Updated');
+
+  const updates = { ...req.body };
+
+  if (req.file) {
+    updates.imageUrl = await uploadToStorage(req.file, 'gallery');
+  }
+
+  if (updates.title !== undefined) updates.title = updates.title.trim();
+  if (updates.category !== undefined) updates.category = updates.category.trim();
+  if (updates.alt !== undefined) updates.alt = updates.alt.trim();
+
+  const updatedItem = await Gallery.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+  return successResponse(res, updatedItem, 'Gallery photo updated successfully');
 });
 
 // Admin: DELETE /api/admin/gallery/:id

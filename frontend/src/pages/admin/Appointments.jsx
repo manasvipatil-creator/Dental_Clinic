@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Calendar, CheckCircle, XCircle, Clock, Search,
-  Filter, Eye, Check, X, Phone, Mail, Stethoscope, User
+  Filter, Eye, Check, X, Phone, Mail, Stethoscope, User, Trash2
 } from 'lucide-react';
 import { adminApi } from '../../services/api';
 import { LoadingSpinner, StatusBadge, EmptyState } from '../../components/UI';
@@ -60,6 +60,22 @@ const Appointments = () => {
     }
   };
 
+  const handleDelete = async (id, patientName) => {
+    if (!window.confirm(`Are you sure you want to permanently delete the appointment record for "${patientName || 'this patient'}"?`)) return;
+    try {
+      setUpdatingId(id);
+      await adminApi.deleteAppointment(id);
+      setAppointments((prev) => prev.filter((app) => app._id !== id));
+      if (selectedAppointment?._id === id) {
+        setSelectedAppointment(null);
+      }
+    } catch (err) {
+      alert('Failed to delete appointment: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const handleReschedule = async () => {
     if (!newDate || !newTime) {
       alert('Please select both a new date and a new time slot.');
@@ -86,10 +102,12 @@ const Appointments = () => {
 
   const filteredAppointments = appointments.filter((app) => {
     const term = searchTerm.toLowerCase();
+    const phoneVal = (app.phone || app.mobile || '').toLowerCase();
     return (
       (app.patientName && app.patientName.toLowerCase().includes(term)) ||
-      (app.phone && app.phone.includes(term)) ||
+      phoneVal.includes(term) ||
       (app.email && app.email.toLowerCase().includes(term)) ||
+      (app.referenceNumber && app.referenceNumber.toLowerCase().includes(term)) ||
       (app.appointmentNumber && app.appointmentNumber.toLowerCase().includes(term))
     );
   });
@@ -171,7 +189,7 @@ const Appointments = () => {
                         {app.patientName}
                       </strong>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                        {app.phone} • {app.email}
+                        {app.phone || app.mobile || 'No phone'} • {app.email || 'No email'}
                       </span>
                     </td>
                     <td style={{ padding: '1rem 1.25rem' }}>
@@ -194,7 +212,7 @@ const Appointments = () => {
                       <StatusBadge status={app.status} />
                     </td>
                     <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <button
                           onClick={() => setSelectedAppointment(app)}
                           className="btn btn-outline btn-sm"
@@ -231,12 +249,22 @@ const Appointments = () => {
                             disabled={updatingId === app._id}
                             onClick={() => handleStatusChange(app._id, 'cancelled')}
                             className="btn btn-outline btn-sm"
-                            style={{ borderColor: '#ef4444', color: '#ef4444' }}
+                            style={{ borderColor: '#f59e0b', color: '#f59e0b' }}
                             title="Cancel Appointment"
                           >
                             <X size={14} />
                           </button>
                         )}
+
+                        <button
+                          disabled={updatingId === app._id}
+                          onClick={() => handleDelete(app._id, app.patientName)}
+                          className="btn btn-outline btn-sm"
+                          style={{ borderColor: '#ef4444', color: '#ef4444' }}
+                          title="Delete Appointment Record"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -265,7 +293,7 @@ const Appointments = () => {
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Appointment Details</h3>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  Ref: {selectedAppointment.appointmentNumber || selectedAppointment._id}
+                  Ref: {selectedAppointment.referenceNumber || selectedAppointment.appointmentNumber || selectedAppointment._id}
                 </span>
               </div>
               <button onClick={() => setSelectedAppointment(null)} className="btn btn-outline btn-sm">
@@ -282,22 +310,26 @@ const Appointments = () => {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.8rem' }}>Phone</span>
-                  <strong>{selectedAppointment.phone}</strong>
+                  <strong>{selectedAppointment.phone || selectedAppointment.mobile || 'N/A'}</strong>
                 </div>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.8rem' }}>Email</span>
-                  <strong>{selectedAppointment.email}</strong>
+                  <strong>{selectedAppointment.email || 'N/A'}</strong>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.8rem' }}>Age</span>
-                  <strong>{selectedAppointment.age || 'N/A'}</strong>
+                  <strong>{selectedAppointment.age ? `${selectedAppointment.age} yrs` : 'N/A'}</strong>
                 </div>
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.8rem' }}>Gender</span>
-                  <strong style={{ textTransform: 'capitalize' }}>{selectedAppointment.gender || 'N/A'}</strong>
+                  <strong style={{ textTransform: 'capitalize' }}>
+                    {selectedAppointment.gender && selectedAppointment.gender !== 'prefer-not-to-say'
+                      ? selectedAppointment.gender
+                      : (selectedAppointment.gender === 'prefer-not-to-say' ? 'Prefer not to say' : 'N/A')}
+                  </strong>
                 </div>
               </div>
 
@@ -323,11 +355,11 @@ const Appointments = () => {
                 </div>
               </div>
 
-              {selectedAppointment.notes && (
+              {(selectedAppointment.notes || selectedAppointment.message) && (
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.8rem' }}>Notes / Symptoms</span>
                   <p style={{ margin: '0.25rem 0 0', background: 'var(--bg)', padding: '0.75rem', borderRadius: 'var(--radius-md)' }}>
-                    {selectedAppointment.notes}
+                    {selectedAppointment.notes || selectedAppointment.message}
                   </p>
                 </div>
               )}
@@ -420,21 +452,40 @@ const Appointments = () => {
               </div>
             </div>
 
-            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
+            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1.25rem', flexWrap: 'wrap' }}>
               <button
-                onClick={() => { setSelectedAppointment(null); setIsRescheduling(false); }}
+                onClick={() => handleDelete(selectedAppointment._id, selectedAppointment.patientName)}
                 className="btn btn-outline"
+                style={{ borderColor: '#ef4444', color: '#ef4444' }}
               >
-                Close
+                <Trash2 size={16} /> Delete Record
               </button>
-              {selectedAppointment.status === 'pending' && (
+
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                 <button
-                  onClick={() => handleStatusChange(selectedAppointment._id, 'confirmed')}
-                  className="btn btn-primary"
+                  onClick={() => { setSelectedAppointment(null); setIsRescheduling(false); }}
+                  className="btn btn-outline"
                 >
-                  <Check size={16} /> Confirm Booking
+                  Close
                 </button>
-              )}
+                {selectedAppointment.status === 'pending' && (
+                  <button
+                    onClick={() => handleStatusChange(selectedAppointment._id, 'confirmed')}
+                    className="btn btn-primary"
+                  >
+                    <Check size={16} /> Confirm Booking
+                  </button>
+                )}
+                {selectedAppointment.status === 'confirmed' && (
+                  <button
+                    onClick={() => handleStatusChange(selectedAppointment._id, 'completed')}
+                    className="btn btn-primary"
+                    style={{ background: '#10b981', borderColor: '#10b981' }}
+                  >
+                    <CheckCircle size={16} /> Mark Completed
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

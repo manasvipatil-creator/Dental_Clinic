@@ -13,7 +13,7 @@ const {
 } = require('../controllers/doctorController');
 
 const {
-  adminGetAppointments, adminGetAppointment, adminUpdateAppointmentStatus, adminGetStats,
+  adminGetAppointments, adminGetAppointment, adminUpdateAppointmentStatus, adminDeleteAppointment, adminGetStats,
 } = require('../controllers/appointmentController');
 
 const {
@@ -96,11 +96,12 @@ router.post('/doctors/:id/image', upload.single('image'), async (req, res, next)
 router.get('/appointments', adminGetAppointments);
 router.get('/appointments/:id', adminGetAppointment);
 router.put('/appointments/:id/status', adminUpdateAppointmentStatus);
+router.delete('/appointments/:id', adminDeleteAppointment);
 
 // Gallery
 router.get('/gallery', adminGetGallery);
 router.post('/gallery', upload.single('image'), adminUploadGallery);
-router.put('/gallery/:id', adminUpdateGallery);
+router.put('/gallery/:id', upload.single('image'), adminUpdateGallery);
 router.delete('/gallery/:id', adminDeleteGallery);
 
 // Testimonials

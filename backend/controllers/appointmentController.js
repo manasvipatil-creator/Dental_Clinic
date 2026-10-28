@@ -36,7 +36,10 @@ const createAppointment = asyncHandler(async (req, res) => {
   const appointmentDate = req.body.appointmentDate;
   let appointmentTime = req.body.appointmentTime;
   const message = req.body.message || req.body.notes || '';
+  const notes = req.body.notes || req.body.message || '';
   const consentGiven = req.body.consentGiven === true || req.body.consentGiven === 'true';
+  const age = req.body.age !== undefined && req.body.age !== '' ? Number(req.body.age) : undefined;
+  const gender = req.body.gender || '';
 
   if (!patientName) {
     return res.status(400).json({ success: false, message: 'Patient name is required' });
@@ -107,13 +110,17 @@ const createAppointment = asyncHandler(async (req, res) => {
   const appointment = await Appointment.create({
     patientName,
     mobile,
+    phone: mobile,
     email: email || '',
+    age: isNaN(age) ? undefined : age,
+    gender: gender || '',
     service: serviceId,
     doctor: doctorId || null,
     appointmentDate,
     appointmentTime,
     appointmentEnd,
-    message: message || '',
+    message: message || notes,
+    notes: notes || message,
     consentGiven: true,
     status: 'pending',
     statusHistory: [{ status: 'pending', note: 'Appointment created' }],
@@ -146,6 +153,7 @@ const adminGetAppointments = asyncHandler(async (req, res) => {
       { patientName: { $regex: search, $options: 'i' } },
       { referenceNumber: { $regex: search, $options: 'i' } },
       { mobile: { $regex: search, $options: 'i' } },
+      { phone: { $regex: search, $options: 'i' } },
     ];
   }
   const [appointments, total] = await Promise.all([
@@ -175,14 +183,9 @@ const adminUpdateAppointmentStatus = asyncHandler(async (req, res) => {
   const appt = await Appointment.findById(req.params.id);
   if (!appt) return res.status(404).json({ success: false, message: 'Appointment not found' });
 
-  const validTransitions = {
-    pending: ['confirmed', 'cancelled'],
-    confirmed: ['completed', 'cancelled'],
-    completed: [],
-    cancelled: [],
-  };
-  if (!validTransitions[appt.status].includes(status)) {
-    return res.status(400).json({ success: false, message: `Cannot transition from ${appt.status} to ${status}` });
+  const allowedStatuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+  if (status && !allowedStatuses.includes(status)) {
+    return res.status(400).json({ success: false, message: `Invalid status: ${status}` });
   }
 
   // Handle rescheduling
@@ -201,11 +204,29 @@ const adminUpdateAppointmentStatus = asyncHandler(async (req, res) => {
     appt.appointmentEnd = `${Math.floor(endMinutes / 60).toString().padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`;
   }
 
-  appt.status = status;
+  const previousStatus = appt.status;
+  if (status) {
+    appt.status = status;
+    if (previousStatus !== status || note) {
+      appt.statusHistory.push({ status, note: note || `Status updated to ${status}` });
+    }
+  }
+
   if (req.body.adminNote !== undefined) appt.adminNote = req.body.adminNote;
-  appt.statusHistory.push({ status, note: note || '' });
   await appt.save();
-  return successResponse(res, appt, 'Appointment updated');
+
+  const populated = await Appointment.findById(appt._id)
+    .populate('service', 'title slug')
+    .populate('doctor', 'name qualifications specialization');
+
+  return successResponse(res, populated, `Appointment status updated to ${appt.status}`);
+});
+
+// Admin: DELETE /api/admin/appointments/:id
+const adminDeleteAppointment = asyncHandler(async (req, res) => {
+  const appt = await Appointment.findByIdAndDelete(req.params.id);
+  if (!appt) return res.status(404).json({ success: false, message: 'Appointment not found' });
+  return successResponse(res, null, 'Appointment deleted successfully');
 });
 
 // Admin dashboard stats
@@ -261,5 +282,6 @@ module.exports = {
   adminGetAppointments,
   adminGetAppointment,
   adminUpdateAppointmentStatus,
+  adminDeleteAppointment,
   adminGetStats,
 };
