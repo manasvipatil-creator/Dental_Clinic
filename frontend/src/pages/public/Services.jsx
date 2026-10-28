@@ -4,6 +4,7 @@ import { publicApi, UPLOADS_URL } from '../../services/api';
 import { LoadingSpinner, EmptyState, ErrorState } from '../../components/UI';
 import { useSettings } from '../../context/SettingsContext';
 import { ChevronRight } from 'lucide-react';
+import { formatCurrency } from '../../utils/currency';
 
 const Services = () => {
   const { settings } = useSettings();
@@ -49,7 +50,7 @@ const Services = () => {
                   <div className="card-body">
                     <h2 style={{ fontSize: 'var(--font-size-xl)', marginBottom: 'var(--space-2)' }}>{s.title}</h2>
                     <p style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-4)' }}>{s.shortDescription}</p>
-                    {s.price && <p style={{ color: 'var(--primary)', fontWeight: 600, fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-3)' }}>From {s.price}</p>}
+                    {s.price && <p style={{ color: 'var(--primary)', fontWeight: 600, fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-3)' }}>From {formatCurrency(s.price)}</p>}
                     <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontWeight: 600, fontSize: 'var(--font-size-sm)' }}>
                       Learn More <ChevronRight size={16} />
                     </span>

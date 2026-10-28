@@ -130,7 +130,9 @@
 
 .footer-legal-links {
   display: flex;
-  gap: var(--space-6);
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
 }
 
 .footer-legal-links a {
@@ -142,6 +144,29 @@
 
 .footer-legal-links a:hover {
   color: var(--accent);
+}
+
+.footer-admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: var(--font-size-xs) !important;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: all var(--transition);
+}
+
+.footer-admin-btn:hover {
+  background: var(--primary);
+  color: #ffffff !important;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(14, 165, 160, 0.25);
 }
 
 @media (max-width: 1024px) {

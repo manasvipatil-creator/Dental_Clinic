@@ -40,15 +40,30 @@ const adminGetService = asyncHandler(async (req, res) => {
 // Admin: POST /api/admin/services
 const adminCreateService = asyncHandler(async (req, res) => {
   const { title } = req.body;
+  if (!title || !title.trim()) {
+    return res.status(400).json({ success: false, message: 'Service title is required' });
+  }
   const slug = slugify(title, { lower: true, strict: true });
-  const service = await Service.create({ ...req.body, slug });
+  let price = req.body.price ? String(req.body.price).trim() : '';
+  if (price.includes('$')) {
+    price = price.replace(/\$/g, '₹');
+  }
+  const service = await Service.create({ ...req.body, price, slug });
   return successResponse(res, service, 'Service created', 201);
 });
 
 // Admin: PUT /api/admin/services/:id
 const adminUpdateService = asyncHandler(async (req, res) => {
   const updates = { ...req.body };
-  if (updates.title) updates.slug = slugify(updates.title, { lower: true, strict: true });
+  if (updates.title !== undefined) {
+    if (!updates.title.trim()) {
+      return res.status(400).json({ success: false, message: 'Service title cannot be empty' });
+    }
+    updates.slug = slugify(updates.title, { lower: true, strict: true });
+  }
+  if (updates.price && updates.price.includes('$')) {
+    updates.price = updates.price.replace(/\$/g, '₹');
+  }
   const service = await Service.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
   if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
   return successResponse(res, service, 'Service updated');

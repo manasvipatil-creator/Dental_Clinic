@@ -2,6 +2,7 @@ const Gallery = require('../models/Gallery');
 const path = require('path');
 const fs = require('fs');
 const { asyncHandler, paginate, successResponse } = require('../utils/helpers');
+const { uploadToStorage } = require('../utils/storage');
 
 // Public: GET /api/gallery
 const getPublicGallery = asyncHandler(async (req, res) => {
@@ -23,7 +24,7 @@ const adminGetGallery = asyncHandler(async (req, res) => {
 // Admin: POST /api/admin/gallery
 const adminUploadGallery = asyncHandler(async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
-  const imageUrl = `/uploads/${req.file.filename}`;
+  const imageUrl = await uploadToStorage(req.file, 'gallery');
   const item = await Gallery.create({
     imageUrl,
     title: req.body.title || '',

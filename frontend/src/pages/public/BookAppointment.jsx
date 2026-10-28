@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Calendar, Clock, User, CheckCircle, AlertCircle, Phone, Stethoscope, ChevronRight } from 'lucide-react';
 import { publicApi, UPLOADS_URL } from '../../services/api';
 import { LoadingSpinner } from '../../components/UI';
+import { formatCurrency } from '../../utils/currency';
 
 const formatTimeLabel = (timeStr) => {
   if (!timeStr) return '';
@@ -39,6 +40,7 @@ const BookAppointment = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   // Form state
   const [selectedService, setSelectedService] = useState(preselectedServiceId || '');
@@ -128,38 +130,60 @@ const BookAppointment = () => {
   }, [selectedDate, selectedDoctor]);
 
   const handlePatientChange = (e) => {
-    setPatientData({ ...patientData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setPatientData({ ...patientData, [name]: value });
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    const errors = {};
 
     if (!selectedService) {
-      setError('Please select a dental service.');
-      return;
+      errors.service = 'Please select a dental service.';
     }
     if (!selectedDate) {
-      setError('Please select an appointment date.');
-      return;
+      errors.date = 'Please select an appointment date.';
     }
     if (!selectedSlot) {
-      setError('Please choose an available time slot.');
-      return;
+      errors.slot = 'Please choose an available time slot.';
     }
     if (!patientData.patientName.trim()) {
-      setError('Please enter your full name.');
-      return;
+      errors.patientName = 'Please enter your full name.';
+    } else if (patientData.patientName.trim().length < 2) {
+      errors.patientName = 'Name must be at least 2 characters.';
     }
+
     if (!patientData.phone.trim()) {
-      setError('Please enter your contact phone number.');
-      return;
+      errors.phone = 'Please enter your contact phone number.';
+    } else if (patientData.phone.trim().replace(/[^0-9]/g, '').length < 10) {
+      errors.phone = 'Please enter a valid 10-digit mobile number.';
     }
+
+    if (!patientData.email.trim()) {
+      errors.email = 'Please enter your email address.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientData.email.trim())) {
+      errors.email = 'Please enter a valid email address.';
+    }
+
+    if (patientData.age !== '' && (isNaN(Number(patientData.age)) || Number(patientData.age) < 1 || Number(patientData.age) > 120)) {
+      errors.age = 'Age must be between 1 and 120.';
+    }
+
     if (!consentGiven) {
-      setError('Please agree to the clinic privacy policy and terms before confirming your booking.');
+      errors.consent = 'Please agree to the clinic privacy policy and terms before confirming your booking.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Please fill in all required fields marked below.');
       return;
     }
 
+    setFieldErrors({});
     setSubmitting(true);
     try {
       const payload = {
@@ -302,7 +326,10 @@ const BookAppointment = () => {
                   <button
                     type="button"
                     key={svc._id}
-                    onClick={() => setSelectedService(svc._id)}
+                    onClick={() => {
+                      setSelectedService(svc._id);
+                      if (fieldErrors.service) setFieldErrors({ ...fieldErrors, service: '' });
+                    }}
                     style={{
                       padding: '1rem',
                       borderRadius: 'var(--radius-md)',
@@ -318,13 +345,14 @@ const BookAppointment = () => {
                     </div>
                     {svc.price && (
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                        From {svc.price}
+                        From {formatCurrency(svc.price)}
                       </div>
                     )}
                   </button>
                 );
               })}
             </div>
+            {fieldErrors.service && <div className="form-error" style={{ marginTop: '0.5rem' }}>{fieldErrors.service}</div>}
           </div>
 
           {/* Step 2: Preferred Doctor (Optional) */}
@@ -374,6 +402,11 @@ const BookAppointment = () => {
                       {doc.name}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{doc.specialization}</div>
+                    {doc.consultationFee && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+                        Fee: {formatCurrency(doc.consultationFee)}
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -391,11 +424,15 @@ const BookAppointment = () => {
                 type="date"
                 min={tomorrowStr}
                 value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="form-control"
+                onChange={(e) => {
+                  setSelectedDate(e.target.value);
+                  if (fieldErrors.date) setFieldErrors({ ...fieldErrors, date: '' });
+                }}
+                className={`form-control ${fieldErrors.date ? 'error' : ''}`}
                 style={{ padding: '0.75rem 1rem', fontSize: '1rem' }}
                 required
               />
+              {fieldErrors.date && <div className="form-error">{fieldErrors.date}</div>}
             </div>
 
             <div>
@@ -419,7 +456,10 @@ const BookAppointment = () => {
                       <button
                         type="button"
                         key={slot.value}
-                        onClick={() => setSelectedSlot(slot.value)}
+                        onClick={() => {
+                          setSelectedSlot(slot.value);
+                          if (fieldErrors.slot) setFieldErrors({ ...fieldErrors, slot: '' });
+                        }}
                         style={{
                           padding: '0.55rem 0.25rem',
                           borderRadius: 'var(--radius-sm)',
@@ -438,6 +478,7 @@ const BookAppointment = () => {
                   })}
                 </div>
               )}
+              {fieldErrors.slot && <div className="form-error">{fieldErrors.slot}</div>}
             </div>
           </div>
 
@@ -455,12 +496,12 @@ const BookAppointment = () => {
                 <input
                   type="text"
                   name="patientName"
-                  required
                   placeholder="e.g. Sarah Jenkins"
                   value={patientData.patientName}
                   onChange={handlePatientChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.patientName ? 'error' : ''}`}
                 />
+                {fieldErrors.patientName && <div className="form-error">{fieldErrors.patientName}</div>}
               </div>
 
               <div>
@@ -470,12 +511,12 @@ const BookAppointment = () => {
                 <input
                   type="tel"
                   name="phone"
-                  required
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="e.g. 9876543210"
                   value={patientData.phone}
                   onChange={handlePatientChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.phone ? 'error' : ''}`}
                 />
+                {fieldErrors.phone && <div className="form-error">{fieldErrors.phone}</div>}
               </div>
 
               <div>
@@ -485,16 +526,16 @@ const BookAppointment = () => {
                 <input
                   type="email"
                   name="email"
-                  required
                   placeholder="sarah@example.com"
                   value={patientData.email}
                   onChange={handlePatientChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.email ? 'error' : ''}`}
                 />
+                {fieldErrors.email && <div className="form-error">{fieldErrors.email}</div>}
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '120px 180px 1fr', gap: '1.25rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-main)' }}>
                   Age
@@ -507,8 +548,9 @@ const BookAppointment = () => {
                   placeholder="30"
                   value={patientData.age}
                   onChange={handlePatientChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.age ? 'error' : ''}`}
                 />
+                {fieldErrors.age && <div className="form-error">{fieldErrors.age}</div>}
               </div>
 
               <div>
@@ -528,14 +570,14 @@ const BookAppointment = () => {
                 </select>
               </div>
 
-              <div>
+              <div style={{ gridColumn: 'span 1' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-main)' }}>
                   Reason / Symptoms / Notes
                 </label>
                 <input
                   type="text"
                   name="notes"
-                  placeholder="e.g. Tooth sensitivity, regular cleaning, etc."
+                  placeholder="e.g. Regular cleaning, toothache..."
                   value={patientData.notes}
                   onChange={handlePatientChange}
                   className="form-control"
@@ -547,25 +589,30 @@ const BookAppointment = () => {
           {/* Patient Consent Checkbox */}
           <div style={{
             display: 'flex',
-            alignItems: 'flex-start',
-            gap: '0.75rem',
+            flexDirection: 'column',
+            gap: '0.5rem',
             padding: '1.25rem',
             background: 'rgba(14, 165, 160, 0.05)',
-            border: '1px solid rgba(14, 165, 160, 0.2)',
+            border: fieldErrors.consent ? '1px solid var(--danger)' : '1px solid rgba(14, 165, 160, 0.2)',
             borderRadius: 'var(--radius-md)',
             marginBottom: '2rem',
           }}>
-            <input
-              type="checkbox"
-              id="bookingConsent"
-              required
-              checked={consentGiven}
-              onChange={(e) => setConsentGiven(e.target.checked)}
-              style={{ marginTop: 3, width: 18, height: 18, accentColor: 'var(--primary)', cursor: 'pointer' }}
-            />
-            <label htmlFor="bookingConsent" style={{ fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.5, cursor: 'pointer' }}>
-              I agree to the <Link to="/privacy-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'underline' }}>Privacy Policy</Link> and <Link to="/terms-and-conditions" target="_blank" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'underline' }}>Terms &amp; Conditions</Link>, and consent to SmileCraft contacting me by phone or email regarding this appointment.
-            </label>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+              <input
+                type="checkbox"
+                id="bookingConsent"
+                checked={consentGiven}
+                onChange={(e) => {
+                  setConsentGiven(e.target.checked);
+                  if (fieldErrors.consent) setFieldErrors({ ...fieldErrors, consent: '' });
+                }}
+                style={{ marginTop: 3, width: 18, height: 18, accentColor: 'var(--primary)', cursor: 'pointer' }}
+              />
+              <label htmlFor="bookingConsent" style={{ fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.5, cursor: 'pointer' }}>
+                I agree to the <Link to="/privacy-policy" target="_blank" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'underline' }}>Privacy Policy</Link> and <Link to="/terms-and-conditions" target="_blank" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'underline' }}>Terms &amp; Conditions</Link>, and consent to SmileCraft contacting me by phone or email regarding this appointment.
+              </label>
+            </div>
+            {fieldErrors.consent && <div className="form-error">{fieldErrors.consent}</div>}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -579,8 +626,17 @@ const BookAppointment = () => {
               className="btn btn-primary"
               style={{ minWidth: 220, padding: '0.85rem 1.75rem', fontSize: '1rem', fontWeight: 700 }}
             >
-              {submitting ? 'Booking Appointment...' : 'Book Appointment'}
-              <ChevronRight size={18} />
+              {submitting ? (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span className="loading-spinner loading-spinner-sm" style={{ borderTopColor: '#fff' }} />
+                  Booking Appointment...
+                </span>
+              ) : (
+                <>
+                  <span>Confirm Appointment</span>
+                  <ChevronRight size={18} />
+                </>
+              )}
             </button>
           </div>
         </form>

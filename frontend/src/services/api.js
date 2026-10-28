@@ -111,8 +111,8 @@ export const adminApi = {
   // Doctors
   getDoctors: (params) => api.get('/admin/doctors', { params }),
   getDoctor: (id) => api.get(`/admin/doctors/${id}`),
-  createDoctor: (data) => api.post('/admin/doctors', data),
-  updateDoctor: (id, data) => api.put(`/admin/doctors/${id}`, data),
+  createDoctor: (data) => api.post('/admin/doctors', data, data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {}),
+  updateDoctor: (id, data) => api.put(`/admin/doctors/${id}`, data, data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {}),
   deleteDoctor: (id) => api.delete(`/admin/doctors/${id}`),
   uploadDoctorImage: (id, formData) => api.post(`/admin/doctors/${id}/image`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 

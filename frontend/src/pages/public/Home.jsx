@@ -25,6 +25,7 @@ import { SkeletonCard, ErrorState } from '../../components/UI';
 import Logo, { ToothSmileIcon } from '../../components/Logo';
 import heroClinicImg from '../../assets/dental-clinic-hero.webp';
 import aboutClinicImg from '../../assets/dental-care-about.jpg';
+import { formatCurrency } from '../../utils/currency';
 import './Home.css';
 
 // SVG Icons matching the brand board 4 key benefits:
@@ -101,7 +102,7 @@ const ServiceCard = ({ service }) => {
             Learn More <ChevronRight size={16} />
           </span>
           {service.price && (
-            <span className="service-card-price">{service.price}</span>
+            <span className="service-card-price">{formatCurrency(service.price)}</span>
           )}
         </div>
       </div>
@@ -137,6 +138,11 @@ const DoctorCard = ({ doctor }) => (
       )}
       {doctor.experience && (
         <span className="doctor-exp-pill">{doctor.experience}+ Years Clinical Experience</span>
+      )}
+      {doctor.consultationFee && (
+        <span style={{ display: 'inline-block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary)', marginTop: '6px' }}>
+          Consultation: {formatCurrency(doctor.consultationFee)}
+        </span>
       )}
     </div>
   </div>
@@ -190,6 +196,7 @@ const Home = () => {
   const [formLoading, setFormLoading] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState('');
+  const [contactErrors, setContactErrors] = useState({});
 
   useEffect(() => {
     document.title = `${settings?.clinicName || 'SmileCraft Dental Clinic'} — Healthy Smiles Brighter Lives`;
@@ -249,17 +256,46 @@ const Home = () => {
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
+    const errors = {};
+    if (!contactForm.name.trim()) {
+      errors.name = 'Full name is required';
+    } else if (contactForm.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters';
+    }
+
+    if (!contactForm.email.trim()) {
+      errors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactForm.email.trim())) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (contactForm.phone.trim() && contactForm.phone.trim().length < 7) {
+      errors.phone = 'Please enter a valid phone number';
+    }
+
+    if (!contactForm.message.trim()) {
+      errors.message = 'Please enter your message';
+    } else if (contactForm.message.trim().length < 5) {
+      errors.message = 'Message must be at least 5 characters';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setContactErrors(errors);
+      return;
+    }
+
+    setContactErrors({});
     setFormLoading(true);
     setFormError('');
     setFormSuccess(false);
 
     try {
       await publicApi.submitContact({
-        name: contactForm.name,
-        email: contactForm.email,
-        phone: contactForm.phone,
+        name: contactForm.name.trim(),
+        email: contactForm.email.trim(),
+        phone: contactForm.phone.trim(),
         subject: 'Inquiry from SmileCraft Home Page',
-        message: contactForm.message || 'Requested callback from SmileCraft home page contact section.',
+        message: contactForm.message.trim(),
       });
       setFormSuccess(true);
       setContactForm({ name: '', email: '', phone: '', message: '' });
@@ -834,12 +870,15 @@ const Home = () => {
                       <input
                         id="home-contact-name"
                         type="text"
-                        required
-                        className="custom-input"
+                        className={`custom-input ${contactErrors.name ? 'error' : ''}`}
                         placeholder="John Doe"
                         value={contactForm.name}
-                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                        onChange={(e) => {
+                          setContactForm({ ...contactForm, name: e.target.value });
+                          if (contactErrors.name) setContactErrors({ ...contactErrors, name: '' });
+                        }}
                       />
+                      {contactErrors.name && <span className="form-error" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>{contactErrors.name}</span>}
                     </div>
 
                     <div className="form-row-two-col">
@@ -848,23 +887,30 @@ const Home = () => {
                         <input
                           id="home-contact-email"
                           type="email"
-                          required
-                          className="custom-input"
+                          className={`custom-input ${contactErrors.email ? 'error' : ''}`}
                           placeholder="john@example.com"
                           value={contactForm.email}
-                          onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                          onChange={(e) => {
+                            setContactForm({ ...contactForm, email: e.target.value });
+                            if (contactErrors.email) setContactErrors({ ...contactErrors, email: '' });
+                          }}
                         />
+                        {contactErrors.email && <span className="form-error" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>{contactErrors.email}</span>}
                       </div>
                       <div className="form-group-custom">
                         <label htmlFor="home-contact-phone" className="custom-label">Phone Number</label>
                         <input
                           id="home-contact-phone"
                           type="tel"
-                          className="custom-input"
-                          placeholder="+1 (555) 000-0000"
+                          className={`custom-input ${contactErrors.phone ? 'error' : ''}`}
+                          placeholder="+91 98765 43210"
                           value={contactForm.phone}
-                          onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                          onChange={(e) => {
+                            setContactForm({ ...contactForm, phone: e.target.value });
+                            if (contactErrors.phone) setContactErrors({ ...contactErrors, phone: '' });
+                          }}
                         />
+                        {contactErrors.phone && <span className="form-error" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>{contactErrors.phone}</span>}
                       </div>
                     </div>
 
@@ -872,13 +918,16 @@ const Home = () => {
                       <label htmlFor="home-contact-msg" className="custom-label">How can we assist you? *</label>
                       <textarea
                         id="home-contact-msg"
-                        required
                         rows={3}
-                        className="custom-textarea"
+                        className={`custom-textarea ${contactErrors.message ? 'error' : ''}`}
                         placeholder="Tell us about your dental concern or appointment inquiry..."
                         value={contactForm.message}
-                        onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                        onChange={(e) => {
+                          setContactForm({ ...contactForm, message: e.target.value });
+                          if (contactErrors.message) setContactErrors({ ...contactErrors, message: '' });
+                        }}
                       />
+                      {contactErrors.message && <span className="form-error" style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>{contactErrors.message}</span>}
                     </div>
 
                     <button

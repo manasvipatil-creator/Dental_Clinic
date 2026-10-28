@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Check, X, Stethoscope, Search, Upload, Image as ImageIcon } from 'lucide-react';
 import { adminApi, UPLOADS_URL } from '../../services/api';
 import { LoadingSpinner, EmptyState } from '../../components/UI';
+import { formatCurrency } from '../../utils/currency';
 
 const Services = () => {
   const [services, setServices] = useState([]);
@@ -198,7 +199,7 @@ const Services = () => {
                     </td>
                     <td style={{ padding: '1rem 1.25rem' }}>
                       <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem' }}>
-                        {svc.price || 'Free Consultation'}
+                        {svc.price ? formatCurrency(svc.price) : 'Free Consultation'}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                         {svc.duration || '30 mins'}
@@ -327,7 +328,7 @@ const Services = () => {
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className="form-control"
-                    placeholder="e.g. $150 or Free Checkup"
+                    placeholder="e.g. ₹500 or Free Checkup"
                   />
                 </div>
               </div>

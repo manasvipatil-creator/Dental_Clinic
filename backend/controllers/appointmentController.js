@@ -46,6 +46,13 @@ const createAppointment = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Mobile phone number is required' });
   }
 
+  if (email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
+    }
+  }
+
   if (!serviceId) {
     return res.status(400).json({ success: false, message: 'Please select a dental service' });
   }

@@ -5,13 +5,19 @@ const { generateToken, asyncHandler, successResponse } = require('../utils/helpe
 // POST /api/auth/login
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email: email.toLowerCase() });
+  if (!email || !email.trim()) {
+    return res.status(400).json({ success: false, message: 'Email address is required' });
+  }
+  if (!password) {
+    return res.status(400).json({ success: false, message: 'Password is required' });
+  }
+  const user = await User.findOne({ email: email.toLowerCase().trim() });
   if (!user || !user.active) {
-    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    return res.status(401).json({ success: false, message: 'Invalid email or password' });
   }
   const match = await user.matchPassword(password);
   if (!match) {
-    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    return res.status(401).json({ success: false, message: 'Invalid email or password' });
   }
   user.lastLogin = new Date();
   await user.save();

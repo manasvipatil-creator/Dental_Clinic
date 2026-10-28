@@ -4,12 +4,26 @@ const { asyncHandler, paginate, successResponse } = require('../utils/helpers');
 // Public: POST /api/contact
 const submitInquiry = asyncHandler(async (req, res) => {
   const { name, email, phone, subject, message } = req.body;
+  if (!name || !name.trim()) {
+    return res.status(400).json({ success: false, message: 'Your full name is required' });
+  }
+  if (!email || !email.trim()) {
+    return res.status(400).json({ success: false, message: 'Email address is required' });
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim())) {
+    return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
+  }
+  if (!message || !message.trim()) {
+    return res.status(400).json({ success: false, message: 'Message content is required' });
+  }
+
   const inquiry = await ContactInquiry.create({
-    name,
-    email: email || '',
-    phone: phone || '',
-    subject: subject || '',
-    message,
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    phone: (phone || '').trim(),
+    subject: (subject || '').trim(),
+    message: message.trim(),
     ipAddress: req.ip || '',
   });
   return successResponse(res, { id: inquiry._id }, 'Inquiry submitted successfully', 201);

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Clock, Heart, Globe } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Heart, Globe, Lock } from 'lucide-react';
 import { LogoWhite } from './Logo';
 import { useSettings } from '../context/SettingsContext';
 import './Footer.css';
@@ -61,7 +61,7 @@ const Footer = () => {
           <div className="footer-col">
             <h3 className="footer-heading">Quick Links</h3>
             <ul className="footer-links">
-              {[['/', 'Home'], ['/about', 'About Us'], ['/services', 'Services'], ['/doctors', 'Our Doctors'], ['/gallery', 'Gallery'], ['/contact', 'Contact']].map(([to, label]) => (
+              {[['/', 'Home'], ['/about', 'About Us'], ['/services', 'Services'], ['/doctors', 'Our Doctors'], ['/gallery', 'Gallery'], ['/contact', 'Contact'], ['/admin/login', 'Admin Login']].map(([to, label]) => (
                 <li key={to}><Link to={to}>{label}</Link></li>
               ))}
             </ul>
@@ -138,6 +138,10 @@ const Footer = () => {
           <div className="footer-legal-links">
             <Link to="/privacy-policy">Privacy Policy</Link>
             <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
+            <Link to="/admin/login" className="footer-admin-btn" aria-label="Admin Login">
+              <Lock size={12} />
+              <span>Admin Login</span>
+            </Link>
           </div>
           <p style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>
             Built with <Heart size={12} style={{ color: '#0EA5A0' }} /> by iCoded Automation Pvt. Ltd.

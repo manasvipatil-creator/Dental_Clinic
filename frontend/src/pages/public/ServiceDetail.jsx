@@ -4,6 +4,7 @@ import { publicApi, UPLOADS_URL } from '../../services/api';
 import { LoadingSpinner, ErrorState } from '../../components/UI';
 import { useSettings } from '../../context/SettingsContext';
 import { Calendar, ArrowLeft } from 'lucide-react';
+import { formatCurrency } from '../../utils/currency';
 
 const ServiceDetail = () => {
   const { slug } = useParams();
@@ -38,26 +39,27 @@ const ServiceDetail = () => {
   return (
     <div>
       {/* Breadcrumb */}
-      <section style={{ background: 'linear-gradient(135deg, #f0fdfc 0%, #f8fafc 100%)', padding: '40px 0', borderBottom: '1px solid var(--border)' }}>
+      <section style={{ background: 'linear-gradient(135deg, #f0fdfc 0%, #f8fafc 100%)', padding: '40px 0 32px', borderBottom: '1px solid var(--border)' }}>
         <div className="container">
-          <nav aria-label="Breadcrumb" style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginBottom: 'var(--space-4)' }}>
+          <nav aria-label="Breadcrumb" style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginBottom: 'var(--space-4)', flexWrap: 'wrap', wordBreak: 'break-word' }}>
             <Link to="/" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Home</Link>
             {' / '}
             <Link to="/services" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Services</Link>
             {' / '}
             <span>{service.title}</span>
           </nav>
-          <h1 className="section-title">{service.title}</h1>
+          <h1 className="section-title" style={{ fontSize: 'clamp(1.5rem, 5vw, 2.25rem)' }}>{service.title}</h1>
           {service.shortDescription && <p className="section-subtitle">{service.shortDescription}</p>}
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ paddingTop: 'var(--space-10)', paddingBottom: 'var(--space-12)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 'var(--space-12)', alignItems: 'start' }}>
-            <div>
+          <div className="service-detail-layout">
+            {/* Main Content */}
+            <div className="service-detail-main">
               {service.image && (
-                <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', marginBottom: 'var(--space-8)', height: 320 }}>
+                <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', marginBottom: 'var(--space-8)', height: 'clamp(200px, 45vw, 320px)' }}>
                   <img
                     src={service.image.startsWith('/uploads') ? `${UPLOADS_URL}${service.image}` : service.image}
                     alt={service.imageAlt || service.title}
@@ -67,25 +69,25 @@ const ServiceDetail = () => {
               )}
               {service.fullDescription && (
                 <div>
-                  <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--space-4)' }}>About This Treatment</h2>
+                  <h2 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.5rem)', marginBottom: 'var(--space-4)' }}>About This Treatment</h2>
                   <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, whiteSpace: 'pre-line' }}>{service.fullDescription}</p>
                 </div>
               )}
               {service.treatmentDetails && (
                 <div style={{ marginTop: 'var(--space-8)' }}>
-                  <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--space-4)' }}>Treatment Details</h2>
+                  <h2 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.5rem)', marginBottom: 'var(--space-4)' }}>Treatment Details</h2>
                   <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, whiteSpace: 'pre-line' }}>{service.treatmentDetails}</p>
                 </div>
               )}
             </div>
 
             {/* Sidebar */}
-            <div style={{ position: 'sticky', top: 'calc(var(--navbar-height) + 24px)' }}>
+            <div className="service-detail-sidebar">
               <div className="card card-body" style={{ marginBottom: 'var(--space-4)' }}>
                 <h3 style={{ marginBottom: 'var(--space-4)' }}>Ready to Get Started?</h3>
                 {service.price && (
                   <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: 'var(--font-size-xl)', marginBottom: 'var(--space-4)' }}>
-                    From {service.price}
+                    From {formatCurrency(service.price)}
                   </p>
                 )}
                 <Link to="/book-appointment" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
@@ -99,6 +101,29 @@ const ServiceDetail = () => {
           </div>
         </div>
       </section>
+
+      <style>{`
+        .service-detail-layout {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: var(--space-10);
+          align-items: start;
+        }
+        .service-detail-sidebar {
+          position: sticky;
+          top: calc(var(--navbar-height) + 24px);
+        }
+        @media (max-width: 768px) {
+          .service-detail-layout {
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+          }
+          .service-detail-sidebar {
+            position: static;
+            order: -1;
+          }
+        }
+      `}</style>
     </div>
   );
 };

@@ -15,19 +15,60 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [mapBlocked, setMapBlocked] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    const errors = {};
+
+    if (!formData.name.trim()) {
+      errors.name = 'Your full name is required';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters';
+    }
+
+    if (!formData.email.trim()) {
+      errors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      errors.email = 'Please provide a valid email address';
+    }
+
+    if (formData.phone.trim() && formData.phone.trim().length < 7) {
+      errors.phone = 'Please provide a valid phone number';
+    }
+
+    if (!formData.message.trim()) {
+      errors.message = 'Message content is required';
+    } else if (formData.message.trim().length < 8) {
+      errors.message = 'Message should be at least 8 characters';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
     try {
-      await publicApi.submitContact(formData);
+      await publicApi.submitContact({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+      });
       setSubmitted(true);
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (err) {
@@ -211,9 +252,10 @@ const Contact = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="form-control"
-                    placeholder="e.g. John Doe"
+                    className={`form-control ${fieldErrors.name ? 'error' : ''}`}
+                    placeholder="e.g. Ravi Sharma"
                   />
+                  {fieldErrors.name && <div className="form-error">{fieldErrors.name}</div>}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
@@ -227,9 +269,10 @@ const Contact = () => {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="form-control"
-                      placeholder="john@example.com"
+                      className={`form-control ${fieldErrors.email ? 'error' : ''}`}
+                      placeholder="ravi@example.com"
                     />
+                    {fieldErrors.email && <div className="form-error">{fieldErrors.email}</div>}
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-main)' }}>
@@ -240,9 +283,10 @@ const Contact = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="form-control"
-                      placeholder="+1 (555) 000-0000"
+                      className={`form-control ${fieldErrors.phone ? 'error' : ''}`}
+                      placeholder="+91 98765 43210"
                     />
+                    {fieldErrors.phone && <div className="form-error">{fieldErrors.phone}</div>}
                   </div>
                 </div>
 
@@ -256,7 +300,7 @@ const Contact = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     className="form-control"
-                    placeholder="General inquiry, insurance question, etc."
+                    placeholder="General inquiry, treatment question, etc."
                   />
                 </div>
 
@@ -270,9 +314,10 @@ const Contact = () => {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="form-control"
+                    className={`form-control ${fieldErrors.message ? 'error' : ''}`}
                     placeholder="How can our dental team assist you today?"
                   />
+                  {fieldErrors.message && <div className="form-error">{fieldErrors.message}</div>}
                 </div>
 
                 <button
