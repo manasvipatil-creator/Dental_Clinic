@@ -23,6 +23,7 @@ import { publicApi, UPLOADS_URL } from '../../services/api';
 import { useSettings } from '../../context/SettingsContext';
 import { SkeletonCard, ErrorState } from '../../components/UI';
 import Logo, { ToothSmileIcon } from '../../components/Logo';
+import { WhatsAppIcon } from '../../components/FloatingWhatsApp';
 import heroClinicImg from '../../assets/dental-clinic-hero.webp';
 import aboutClinicImg from '../../assets/dental-care-about.jpg';
 import { formatCurrency } from '../../utils/currency';
@@ -726,6 +727,23 @@ const Home = () => {
                 <Calendar size={20} />
                 <span>Book Appointment</span>
               </Link>
+              <a
+                href={`https://wa.me/${(settings?.whatsappNumber || settings?.phone || '9175514916').replace(/\D/g, '')}?text=${encodeURIComponent('Hello SmileCraft Dental Clinic, I would like to book a dental consultation.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-lg"
+                style={{
+                  backgroundColor: '#25D366',
+                  color: '#ffffff',
+                  borderColor: '#25D366',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <WhatsAppIcon size={20} color="#ffffff" />
+                <span>WhatsApp</span>
+              </a>
               {settings?.phone && (
                 <a href={`tel:${settings.phone}`} className="btn btn-outline-white btn-lg cta-call-btn">
                   <Phone size={20} />

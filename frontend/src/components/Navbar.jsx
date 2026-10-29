@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Calendar } from 'lucide-react';
 import Logo from './Logo';
 import { useSettings } from '../context/SettingsContext';
+import { WhatsAppIcon } from './FloatingWhatsApp';
 import './Navbar.css';
 
 const NAV_LINKS = [
@@ -19,6 +20,11 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { settings } = useSettings();
   const location = useLocation();
+
+  const phoneDisplay = settings?.phone || '+91 9175514916';
+  const rawWa = (settings?.whatsappNumber || settings?.phone || '9175514916').replace(/\D/g, '');
+  const waNumber = rawWa.length === 10 ? `91${rawWa}` : rawWa.startsWith('91') ? rawWa : `91${rawWa}`;
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent('Hello SmileCraft Dental Clinic, I would like to inquire about appointments.')}`;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -49,12 +55,11 @@ const Navbar = () => {
         </nav>
 
         <div className="navbar-actions">
-          {settings?.phone && (
-            <a href={`tel:${settings.phone}`} className="navbar-phone" aria-label="Call us">
-              <Phone size={14} />
-              <span>{settings.phone}</span>
-            </a>
-          )}
+          <a href={`tel:${phoneDisplay}`} className="navbar-phone" aria-label="Call us">
+            <Phone size={14} />
+            <span>{phoneDisplay}</span>
+          </a>
+
           <Link to="/book-appointment" className="btn btn-primary btn-sm">
             <Calendar size={16} />
             Book Appointment
@@ -85,15 +90,41 @@ const Navbar = () => {
               {link.label}
             </NavLink>
           ))}
-          <Link
-            to="/book-appointment"
-            className="btn btn-primary"
-            style={{ marginTop: 'var(--space-4)', width: '100%', justifyContent: 'center' }}
-            onClick={() => setMenuOpen(false)}
-          >
-            <Calendar size={16} />
-            Book Appointment
-          </Link>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: 'var(--space-4)' }}>
+            <a
+              href={`tel:${phoneDisplay}`}
+              className="btn btn-outline"
+              style={{ width: '100%', justifyContent: 'center' }}
+            >
+              <Phone size={16} />
+              Call {phoneDisplay}
+            </a>
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn"
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                backgroundColor: '#25D366',
+                color: '#ffffff',
+                border: 'none',
+              }}
+            >
+              <WhatsAppIcon size={18} color="#ffffff" />
+              Chat on WhatsApp (+91 9175514916)
+            </a>
+            <Link
+              to="/book-appointment"
+              className="btn btn-primary"
+              style={{ width: '100%', justifyContent: 'center' }}
+              onClick={() => setMenuOpen(false)}
+            >
+              <Calendar size={16} />
+              Book Appointment
+            </Link>
+          </div>
         </nav>
       </div>
     </header>

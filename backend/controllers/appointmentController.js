@@ -156,7 +156,7 @@ const adminGetAppointments = asyncHandler(async (req, res) => {
       { phone: { $regex: search, $options: 'i' } },
     ];
   }
-  const [appointments, total] = await Promise.all([
+  const [appointments, total, statusCounts] = await Promise.all([
     Appointment.find(filter)
       .populate('service', 'title')
       .populate('doctor', 'name')
@@ -164,8 +164,22 @@ const adminGetAppointments = asyncHandler(async (req, res) => {
       .skip(skip)
       .limit(lim),
     Appointment.countDocuments(filter),
+    Promise.all([
+      Appointment.countDocuments(),
+      Appointment.countDocuments({ status: 'pending' }),
+      Appointment.countDocuments({ status: 'confirmed' }),
+      Appointment.countDocuments({ status: 'completed' }),
+      Appointment.countDocuments({ status: 'cancelled' }),
+    ]),
   ]);
-  return successResponse(res, { appointments, total, page: pg, pages: Math.ceil(total / lim) });
+  const counts = {
+    all: statusCounts[0],
+    pending: statusCounts[1],
+    confirmed: statusCounts[2],
+    completed: statusCounts[3],
+    cancelled: statusCounts[4],
+  };
+  return successResponse(res, { appointments, total, page: pg, pages: Math.ceil(total / lim), counts });
 });
 
 // Admin: GET /api/admin/appointments/:id

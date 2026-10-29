@@ -49,7 +49,8 @@ const seedData = async (options = {}) => {
     await ClinicSettings.create({
       clinicName: 'SmileCraft Dental Clinic',
       tagline: 'Precision Dentistry, Compassionate Care',
-      phone: '+1 (234) 567-8900',
+      phone: '+91 9175514916',
+      whatsappNumber: '9175514916',
       email: 'info@smilecraft.demo',
       address: '123 Smile Boulevard, Suite 400, Dental Care Plaza',
       city: 'Metropolis',

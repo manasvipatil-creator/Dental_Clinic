@@ -5,7 +5,7 @@ const PatientPrivacy = () => {
   const { settings } = useSettings();
   const clinicName = settings?.clinicName || 'SmileCraft Dental Clinic';
   const email = settings?.email || 'privacy@smilecraft.demo';
-  const phone = settings?.phone || '+1 (234) 567-8900';
+  const phone = settings?.phone || '+91 9175514916';
 
   return (
     <div style={{ paddingTop: 'calc(var(--navbar-height) + 2.5rem)', paddingBottom: '5rem', background: 'var(--bg)' }}>

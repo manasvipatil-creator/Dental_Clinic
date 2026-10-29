@@ -120,8 +120,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <strong style={{ display: 'block', color: 'var(--text-main)', marginBottom: '0.25rem' }}>Phone Number</strong>
-                    <a href={`tel:${settings?.phone || '+1-234-567-8900'}`} style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>
-                      {settings?.phone || '+1 (234) 567-8900'}
+                    <a href={`tel:${settings?.phone || '+91 9175514916'}`} style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>
+                      {settings?.phone || '+91 9175514916'}
                     </a>
                   </div>
                 </div>
@@ -141,7 +141,7 @@ const Contact = () => {
                 {/* WhatsApp Action */}
                 <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
                   <a
-                    href={`https://wa.me/${(settings?.whatsappNumber || settings?.phone || '+12345678900').replace(/[^0-9]/g, '')}?text=Hello%20SmileCraft%20Dental%20Clinic,%20I%20would%20like%20to%20inquire%20about%20dental%20treatments`}
+                    href={`https://wa.me/${(settings?.whatsappNumber || settings?.phone || '919175514916').replace(/[^0-9]/g, '')}?text=Hello%20SmileCraft%20Dental%20Clinic,%20I%20would%20like%20to%20inquire%20about%20dental%20treatments`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-sm"

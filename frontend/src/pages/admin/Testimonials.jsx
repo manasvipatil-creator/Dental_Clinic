@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Star, Check, X } from 'lucide-react';
+import { Plus, Trash2, Star, Check, X, Edit2 } from 'lucide-react';
 import { adminApi } from '../../services/api';
 import { LoadingSpinner, EmptyState } from '../../components/UI';
 
@@ -7,6 +7,7 @@ const Testimonials = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     displayName: '',
     treatment: '',
@@ -35,16 +36,39 @@ const Testimonials = () => {
     fetchTestimonials();
   }, []);
 
+  const handleAddNew = () => {
+    setEditingItem(null);
+    setFormData({ displayName: '', treatment: '', content: '', rating: 5, published: true });
+    setModalOpen(true);
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setFormData({
+      displayName: item.displayName || '',
+      treatment: item.treatment || '',
+      content: item.content || '',
+      rating: item.rating || 5,
+      published: item.published !== undefined ? item.published : true,
+    });
+    setModalOpen(true);
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await adminApi.createTestimonial(formData);
+      if (editingItem) {
+        await adminApi.updateTestimonial(editingItem._id, formData);
+      } else {
+        await adminApi.createTestimonial(formData);
+      }
       setModalOpen(false);
+      setEditingItem(null);
       setFormData({ displayName: '', treatment: '', content: '', rating: 5, published: true });
       fetchTestimonials();
     } catch (err) {
-      alert(err.message);
+      alert(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -71,7 +95,7 @@ const Testimonials = () => {
             Review, publish, or add verified patient stories
           </p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="btn btn-primary">
+        <button onClick={handleAddNew} className="btn btn-primary">
           <Plus size={18} /> Add Review
         </button>
       </div>
@@ -94,7 +118,7 @@ const Testimonials = () => {
                   <th style={{ padding: '1rem 1.25rem' }}>Treatment</th>
                   <th style={{ padding: '1rem 1.25rem' }}>Rating</th>
                   <th style={{ padding: '1rem 1.25rem' }}>Review Text</th>
-                  <th style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: '1rem 1.25rem', textAlign: 'right', minWidth: '130px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -114,10 +138,39 @@ const Testimonials = () => {
                         {item.content}
                       </p>
                     </td>
-                    <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
-                      <button onClick={() => handleDelete(item._id)} className="btn btn-outline btn-sm" style={{ borderColor: '#ef4444', color: '#ef4444' }}>
-                        <Trash2 size={14} />
-                      </button>
+                    <td style={{ padding: '0.85rem 1.25rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'inline-flex', gap: '0.4rem', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="btn btn-outline btn-sm"
+                          style={{
+                            borderColor: '#0ea5a0',
+                            color: '#0f766e',
+                            background: '#f0fdfa',
+                            padding: '0.35rem 0.6rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                          title="Edit Review"
+                        >
+                          <Edit2 size={14} />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item._id)}
+                          className="btn btn-outline btn-sm"
+                          style={{
+                            borderColor: '#fecaca',
+                            color: '#dc2626',
+                            background: '#fef2f2',
+                            padding: '0.35rem 0.55rem',
+                          }}
+                          title="Delete Review"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -136,8 +189,16 @@ const Testimonials = () => {
         }}>
           <div className="card" style={{ maxWidth: 480, width: '100%', padding: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Add Patient Review</h3>
-              <button onClick={() => setModalOpen(false)} className="btn btn-outline btn-sm">
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+                {editingItem ? 'Edit Patient Review' : 'Add Patient Review'}
+              </h3>
+              <button
+                onClick={() => {
+                  setModalOpen(false);
+                  setEditingItem(null);
+                }}
+                className="btn btn-outline btn-sm"
+              >
                 <X size={16} />
               </button>
             </div>
@@ -192,11 +253,18 @@ const Testimonials = () => {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setModalOpen(false)} className="btn btn-outline">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModalOpen(false);
+                    setEditingItem(null);
+                  }}
+                  className="btn btn-outline"
+                >
                   Cancel
                 </button>
                 <button type="submit" disabled={saving} className="btn btn-primary">
-                  {saving ? 'Saving...' : 'Add Review'}
+                  {saving ? 'Saving...' : (editingItem ? 'Update Review' : 'Add Review')}
                 </button>
               </div>
             </form>

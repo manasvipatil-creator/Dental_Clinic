@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Heart, Globe, Lock } from 'lucide-react';
 import { LogoWhite } from './Logo';
 import { useSettings } from '../context/SettingsContext';
+import { WhatsAppIcon } from './FloatingWhatsApp';
 import './Footer.css';
 
 const FacebookIcon = () => (
@@ -51,9 +52,6 @@ const Footer = () => {
               {settings?.socialInstagram && <a href={settings.socialInstagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>}
               {settings?.socialTwitter && <a href={settings.socialTwitter} target="_blank" rel="noopener noreferrer" aria-label="Twitter"><TwitterIcon /></a>}
               {settings?.socialYoutube && <a href={settings.socialYoutube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"><YoutubeIcon /></a>}
-              {!settings?.socialFacebook && !settings?.socialInstagram && (
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>Connect with us on social media</span>
-              )}
             </div>
           </div>
 
@@ -81,29 +79,32 @@ const Footer = () => {
           <div className="footer-col">
             <h3 className="footer-heading">Contact</h3>
             <div className="footer-contact-list">
-              {(settings?.phone || settings?.address) ? (
-                <>
-                  {settings?.phone && (
-                    <a href={`tel:${settings.phone}`} className="footer-contact-item">
-                      <Phone size={16} />
-                      <span>{settings.phone}</span>
-                    </a>
-                  )}
-                  {settings?.email && (
-                    <a href={`mailto:${settings.email}`} className="footer-contact-item">
-                      <Mail size={16} />
-                      <span>{settings.email}</span>
-                    </a>
-                  )}
-                  {settings?.address && (
-                    <div className="footer-contact-item">
-                      <MapPin size={16} />
-                      <span>{settings.address}{settings.city ? `, ${settings.city}` : ''}</span>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>Contact details set in admin panel</p>
+              <a href={`tel:${settings?.phone || '+91 9175514916'}`} className="footer-contact-item">
+                <Phone size={16} />
+                <span>{settings?.phone || '+91 9175514916'}</span>
+              </a>
+              <a
+                href={`https://wa.me/${(settings?.whatsappNumber || settings?.phone || '9175514916').replace(/\D/g, '')}?text=${encodeURIComponent('Hello SmileCraft Dental Clinic, I would like to inquire about dental treatments.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-contact-item"
+                style={{ color: '#34D399' }}
+                title="Chat on WhatsApp"
+              >
+                <WhatsAppIcon size={16} color="#34D399" />
+                <span>+91 9175514916 (WhatsApp)</span>
+              </a>
+              {settings?.email && (
+                <a href={`mailto:${settings.email}`} className="footer-contact-item">
+                  <Mail size={16} />
+                  <span>{settings.email}</span>
+                </a>
+              )}
+              {settings?.address && (
+                <div className="footer-contact-item">
+                  <MapPin size={16} />
+                  <span>{settings.address}{settings.city ? `, ${settings.city}` : ''}</span>
+                </div>
               )}
             </div>
 
